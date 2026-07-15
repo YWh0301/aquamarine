@@ -11,6 +11,9 @@ output_manifest="$component_root/padputer/OUTPUT_SHA256SUMS"
 out_dir="$root/downloads/android/aquamarine-0.12.1-patched"
 out="$out_dir/libaquamarine.so.0.12.1"
 
+[[ -d "$root/downloads/android/aquamarine-0.12.1-builddeps" ]] || "$component_root/padputer/fetch-builddeps.sh"
+[[ -d "$root/downloads/android/hyprland-0.55.4-aarch64" ]] || \
+  "$root/utils/pkgbuilds/archlinuxarm/hyprland-0.55.4-aarch64/fetch.sh"
 git -C "$source_repo" cat-file -e "$expected_commit^{commit}" || {
   echo "missing audited Aquamarine source commit $expected_commit" >&2
   exit 2
