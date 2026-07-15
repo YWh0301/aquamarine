@@ -70,6 +70,11 @@ namespace Aquamarine {
         bool readyForFrameCallback      = false; // true after attaching a buffer
         bool frameScheduled             = false;
 
+        // xdg_toplevel.configure carries the size, but the client must not react
+        // with a buffer until the following xdg_surface.configure is ACKed.
+        bool                        pendingConfigure      = false;
+        Hyprutils::Math::Vector2D   pendingConfigureSize;
+
         struct {
             std::vector<std::pair<Hyprutils::Memory::CWeakPointer<IBuffer>, Hyprutils::Memory::CSharedPointer<CWaylandBuffer>>> buffers;
         } backendState;

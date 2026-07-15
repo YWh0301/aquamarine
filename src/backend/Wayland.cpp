@@ -489,6 +489,16 @@ Aquamarine::CWaylandOutput::CWaylandOutput(const std::string& name_, Hyprutils::
     waylandState.xdgSurface->setConfigure([this](CCXdgSurface* r, uint32_t serial) {
         backend->backend->log(AQ_LOG_DEBUG, std::format("Output {}: configure surface with {}", name, serial));
         r->sendAckConfigure(serial);
+
+        // xdg_toplevel.configure and xdg_surface.configure form one configure
+        // sequence. Emitting state from the toplevel callback lets a synchronous
+        // consumer attach its first buffer before this ACK, which is a protocol
+        // error. Apply the size only after the serial has been acknowledged.
+        if (pendingConfigure) {
+            pendingConfigure = false;
+            events.state.emit(SStateEvent{.size = pendingConfigureSize});
+            sendFrameAndSetCallback();
+        }
     });
 
     waylandState.xdgToplevel = makeShared<CCXdgToplevel>(waylandState.xdgSurface->sendGetToplevel());
@@ -508,8 +518,8 @@ Aquamarine::CWaylandOutput::CWaylandOutput(const std::string& name_, Hyprutils::
             w = 1280;
             h = 720;
         }
-        events.state.emit(SStateEvent{.size = {w, h}});
-        sendFrameAndSetCallback();
+        pendingConfigureSize = {w, h};
+        pendingConfigure     = true;
     });
 
     waylandState.xdgToplevel->setClose([this](CCXdgToplevel* r) { destroy(); });
