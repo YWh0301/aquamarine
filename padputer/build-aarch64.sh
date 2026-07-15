@@ -4,7 +4,7 @@ component_root=$(cd "$(dirname "$0")/.." && pwd)
 root=$(git -C "$component_root" rev-parse --show-superproject-working-tree)
 [[ -n "$root" ]] || { echo "Aquamarine must be checked out as a Padputer submodule" >&2; exit 2; }
 source_repo="$component_root"
-expected_commit=cd3fe558399fbda0c785ead7620a5965b6dc4001
+expected_commit=eddb24439dc8b61fbc82fb015b7df47cd25a3606
 runtime_manifest="$root/utils/install/hyprland-0.55.4-aarch64/SHA256SUMS"
 build_manifest="$component_root/padputer/BUILDDEPS_SHA256SUMS"
 output_manifest="$component_root/padputer/OUTPUT_SHA256SUMS"
