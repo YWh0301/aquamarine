@@ -5,7 +5,7 @@ root=$(git -C "$component_root" rev-parse --show-superproject-working-tree)
 [[ -n "$root" ]] || { echo "Aquamarine must be checked out as a Padputer submodule" >&2; exit 2; }
 source_repo="$component_root"
 expected_commit=4406f00889dfb5ab3828c847dd0c46cb066ea5b9
-runtime_manifest="$root/utils/pkgbuilds/archlinuxarm/hyprland-0.55.4-aarch64/SHA256SUMS"
+runtime_manifest="$root/utils/install/hyprland-0.55.4-aarch64/SHA256SUMS"
 build_manifest="$component_root/padputer/BUILDDEPS_SHA256SUMS"
 output_manifest="$component_root/padputer/OUTPUT_SHA256SUMS"
 out_dir="$component_root/out"
@@ -13,7 +13,7 @@ out="$out_dir/libaquamarine.so.0.12.1"
 
 [[ -d "$root/downloads/android/aquamarine-0.12.1-builddeps" ]] || "$component_root/padputer/fetch-builddeps.sh"
 [[ -d "$root/downloads/android/hyprland-0.55.4-aarch64" ]] || \
-  "$root/utils/pkgbuilds/archlinuxarm/hyprland-0.55.4-aarch64/fetch.sh"
+  "$root/utils/install/hyprland-0.55.4-aarch64/fetch.sh"
 git -C "$source_repo" cat-file -e "$expected_commit^{commit}" || {
   echo "missing audited Aquamarine source commit $expected_commit" >&2
   exit 2
