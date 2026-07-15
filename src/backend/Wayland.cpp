@@ -489,6 +489,7 @@ Aquamarine::CWaylandOutput::CWaylandOutput(const std::string& name_, Hyprutils::
     waylandState.xdgSurface->setConfigure([this](CCXdgSurface* r, uint32_t serial) {
         backend->backend->log(AQ_LOG_DEBUG, std::format("Output {}: configure surface with {}", name, serial));
         r->sendAckConfigure(serial);
+        initialConfigureAcked = true;
 
         // xdg_toplevel.configure and xdg_surface.configure form one configure
         // sequence. Emitting state from the toplevel callback lets a synchronous
@@ -611,6 +612,18 @@ bool Aquamarine::CWaylandOutput::commit() {
 
         events.commit.emit();
         state->onCommit();
+        return true;
+    }
+
+    if (!initialConfigureAcked) {
+        // Backend startup may submit a buffer before the parent compositor has
+        // delivered its initial xdg_surface.configure. Consume that output
+        // state without attaching it; the configure callback schedules a fresh
+        // frame after ACKing the serial.
+        backend->backend->log(AQ_LOG_DEBUG, std::format("Output {}: deferring buffer until initial configure ACK", name));
+        events.commit.emit();
+        state->onCommit();
+        needsFrame = true;
         return true;
     }
 

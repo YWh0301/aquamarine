@@ -72,7 +72,8 @@ namespace Aquamarine {
 
         // xdg_toplevel.configure carries the size, but the client must not react
         // with a buffer until the following xdg_surface.configure is ACKed.
-        bool                        pendingConfigure      = false;
+        bool                        pendingConfigure       = false;
+        bool                        initialConfigureAcked = false;
         Hyprutils::Math::Vector2D   pendingConfigureSize;
 
         struct {
