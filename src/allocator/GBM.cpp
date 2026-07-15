@@ -331,8 +331,14 @@ CGBMAllocator::~CGBMAllocator() {
 SP<CGBMAllocator> Aquamarine::CGBMAllocator::create(int drmfd_, Hyprutils::Memory::CWeakPointer<CBackend> backend_) {
     uint64_t capabilities = 0;
     if (drmGetCap(drmfd_, DRM_CAP_PRIME, &capabilities) || !(capabilities & DRM_PRIME_CAP_EXPORT)) {
-        backend_->log(AQ_LOG_ERROR, "Cannot create a GBM Allocator: PRIME export is not supported by the gpu.");
-        return nullptr;
+        if (!envEnabled("PADPUTER_VALIDATED_INHERITED_DRM")) {
+            backend_->log(AQ_LOG_ERROR, "Cannot create a GBM Allocator: PRIME export is not supported by the gpu.");
+            return nullptr;
+        }
+
+        backend_->log(AQ_LOG_WARNING,
+                      "PADPUTER_VALIDATED_INHERITED_DRM: DRM_CAP_PRIME query unavailable after SELinux domain drop; "
+                      "continuing with the fixed, launcher-validated render fd");
     }
 
     auto allocator = SP<CGBMAllocator>(new CGBMAllocator(drmfd_, backend_));
