@@ -7,8 +7,8 @@ Android display bridge. The audited source state is commit
 - `fetch-builddeps.sh` recreates ignored Arch Linux ARM build-dependency archives.
 - `build-aarch64.sh` creates an ignored, component-local `.build/aarch64/`
   sysroot and incremental CMake tree, verifies the public ABI, and writes the
-  deterministic deployment library under the top-level ignored `downloads/`
-  output area.
+  deterministic deployment library under the component-local ignored `out/`
+  directory.
 - `BUILDDEPS_SHA256SUMS` and `OUTPUT_SHA256SUMS` pin all ignored inputs/output.
 - `patches/initial-configure.patch` is an export for audit or upstream submission;
   the fix itself is committed in this fork.

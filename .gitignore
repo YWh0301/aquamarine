@@ -33,6 +33,7 @@
 
 build/
 .build/
+out/
 .vscode/
 .cache/
 

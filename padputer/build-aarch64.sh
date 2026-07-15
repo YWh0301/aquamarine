@@ -8,7 +8,7 @@ expected_commit=4406f00889dfb5ab3828c847dd0c46cb066ea5b9
 runtime_manifest="$root/utils/pkgbuilds/archlinuxarm/hyprland-0.55.4-aarch64/SHA256SUMS"
 build_manifest="$component_root/padputer/BUILDDEPS_SHA256SUMS"
 output_manifest="$component_root/padputer/OUTPUT_SHA256SUMS"
-out_dir="$root/downloads/android/aquamarine-0.12.1-patched"
+out_dir="$component_root/out"
 out="$out_dir/libaquamarine.so.0.12.1"
 
 [[ -d "$root/downloads/android/aquamarine-0.12.1-builddeps" ]] || "$component_root/padputer/fetch-builddeps.sh"
