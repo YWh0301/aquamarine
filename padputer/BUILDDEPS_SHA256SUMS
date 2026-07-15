@@ -1,0 +1,9 @@
+544df84ae6e1bc84da50b8bfe7681dca4d8a895064b303a39f6a0edfceaafcc9  downloads/android/aquamarine-0.12.1-builddeps/hwdata-0.409-1-any.pkg.tar.xz
+73af5a8923b764610ed281c3d1529c73bfeb40dcb3a4015a1e36ef4fc1ba7e5d  downloads/android/aquamarine-0.12.1-builddeps/libdisplay-info-0.3.0-1-aarch64.pkg.tar.xz
+d4173d7adc60d32d389e44e976447962c31bc23ff9a2153539bd8ad766e307b8  downloads/android/aquamarine-0.12.1-builddeps/libdrm-2.4.134-1-aarch64.pkg.tar.xz
+5fb2edf55bb981b72fe3c444a21c8ddc70e34f542460053260082d876d7cb1cd  downloads/android/aquamarine-0.12.1-builddeps/libffi-3.7.1-1-aarch64.pkg.tar.xz
+5a163e41583346b55f25de580e10c2edb31f5c8662667531d0e476b7b1336338  downloads/android/aquamarine-0.12.1-builddeps/libglvnd-1.7.0-3-aarch64.pkg.tar.xz
+be14578eb3f36524261ed1e462a7e596bd973a2c2d8381aced8cd047ed325540  downloads/android/aquamarine-0.12.1-builddeps/mesa-1:26.1.4-1-aarch64.pkg.tar.xz
+4d20f22998a75c9fe1d38c86cd6f4324120fc2bb02f4a749e4794daac6b87dd2  downloads/android/aquamarine-0.12.1-builddeps/pixman-0.46.4-1.1-aarch64.pkg.tar.xz
+a220b49ceb0d5234d80c78d5858b96374706e884c0dc29d251593fb2615516e6  downloads/android/aquamarine-0.12.1-builddeps/systemd-libs-261.1-1-aarch64.pkg.tar.xz
+14a1b1783c4a020538a58b2baa0cdab3e608ef9364e808c6b6f66d0bfaad34f0  downloads/android/aquamarine-0.12.1-builddeps/wayland-1.25.0-1-aarch64.pkg.tar.xz

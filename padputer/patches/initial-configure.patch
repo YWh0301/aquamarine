@@ -1,0 +1,61 @@
+From 4406f00889dfb5ab3828c847dd0c46cb066ea5b9 Mon Sep 17 00:00:00 2001
+From: pingzi <yuwenhao@stu.pku.edu.cn>
+Date: Wed, 15 Jul 2026 20:02:59 +0800
+Subject: [PATCH] fix: defer nested output state until configure ack
+
+---
+ include/aquamarine/backend/Wayland.hpp |  5 +++++
+ src/backend/Wayland.cpp                | 14 ++++++++++++--
+ 2 files changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/include/aquamarine/backend/Wayland.hpp b/include/aquamarine/backend/Wayland.hpp
+index f553f33..1fbb651 100644
+--- a/include/aquamarine/backend/Wayland.hpp
++++ b/include/aquamarine/backend/Wayland.hpp
+@@ -70,6 +70,11 @@ namespace Aquamarine {
+         bool readyForFrameCallback      = false; // true after attaching a buffer
+         bool frameScheduled             = false;
+ 
++        // xdg_toplevel.configure carries the size, but the client must not react
++        // with a buffer until the following xdg_surface.configure is ACKed.
++        bool                        pendingConfigure      = false;
++        Hyprutils::Math::Vector2D   pendingConfigureSize;
++
+         struct {
+             std::vector<std::pair<Hyprutils::Memory::CWeakPointer<IBuffer>, Hyprutils::Memory::CSharedPointer<CWaylandBuffer>>> buffers;
+         } backendState;
+diff --git a/src/backend/Wayland.cpp b/src/backend/Wayland.cpp
+index e9a9dfb..433525c 100644
+--- a/src/backend/Wayland.cpp
++++ b/src/backend/Wayland.cpp
+@@ -489,6 +489,16 @@ Aquamarine::CWaylandOutput::CWaylandOutput(const std::string& name_, Hyprutils::
+     waylandState.xdgSurface->setConfigure([this](CCXdgSurface* r, uint32_t serial) {
+         backend->backend->log(AQ_LOG_DEBUG, std::format("Output {}: configure surface with {}", name, serial));
+         r->sendAckConfigure(serial);
++
++        // xdg_toplevel.configure and xdg_surface.configure form one configure
++        // sequence. Emitting state from the toplevel callback lets a synchronous
++        // consumer attach its first buffer before this ACK, which is a protocol
++        // error. Apply the size only after the serial has been acknowledged.
++        if (pendingConfigure) {
++            pendingConfigure = false;
++            events.state.emit(SStateEvent{.size = pendingConfigureSize});
++            sendFrameAndSetCallback();
++        }
+     });
+ 
+     waylandState.xdgToplevel = makeShared<CCXdgToplevel>(waylandState.xdgSurface->sendGetToplevel());
+@@ -508,8 +518,8 @@ Aquamarine::CWaylandOutput::CWaylandOutput(const std::string& name_, Hyprutils::
+             w = 1280;
+             h = 720;
+         }
+-        events.state.emit(SStateEvent{.size = {w, h}});
+-        sendFrameAndSetCallback();
++        pendingConfigureSize = {w, h};
++        pendingConfigure     = true;
+     });
+ 
+     waylandState.xdgToplevel->setClose([this](CCXdgToplevel* r) { destroy(); });
+-- 
+2.55.0
+
