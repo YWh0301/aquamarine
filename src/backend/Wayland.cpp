@@ -306,15 +306,66 @@ Aquamarine::CWaylandPointer::CWaylandPointer(SP<CCWlPointer> pointer_, Hyprutils
         });
     });
 
-    pointer->setAxis([this](CCWlPointer* r, uint32_t timeMs, wl_pointer_axis axis, wl_fixed_t value) {
-        events.axis.emit(SAxisEvent{
-            .timeMs = timeMs,
-            .axis   = axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ? AQ_POINTER_AXIS_HORIZONTAL : AQ_POINTER_AXIS_VERTICAL,
-            .delta  = wl_fixed_to_double(value),
-        });
+    const auto axisIndex = [](wl_pointer_axis axis) -> size_t {
+        return axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ? 1 : 0;
+    };
+    const auto aqAxis = [](wl_pointer_axis axis) {
+        return axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL ? AQ_POINTER_AXIS_HORIZONTAL : AQ_POINTER_AXIS_VERTICAL;
+    };
+
+    pointer->setAxisSource([this](CCWlPointer* r, wl_pointer_axis_source source) {
+        pendingAxisSource = source == WL_POINTER_AXIS_SOURCE_FINGER       ? AQ_POINTER_AXIS_SOURCE_FINGER :
+            source == WL_POINTER_AXIS_SOURCE_CONTINUOUS                   ? AQ_POINTER_AXIS_SOURCE_CONTINUOUS :
+            source == WL_POINTER_AXIS_SOURCE_WHEEL_TILT                   ? AQ_POINTER_AXIS_SOURCE_TILT : AQ_POINTER_AXIS_SOURCE_WHEEL;
     });
 
-    pointer->setFrame([this](CCWlPointer* r) { events.frame.emit(); });
+    pointer->setAxisDiscrete([this, axisIndex](CCWlPointer* r, wl_pointer_axis axis, int32_t discrete) {
+        pendingAxisDiscrete[axisIndex(axis)] = discrete * 120.0;
+    });
+
+    pointer->setAxisValue120([this, axisIndex](CCWlPointer* r, wl_pointer_axis axis, int32_t value120) {
+        pendingAxisDiscrete[axisIndex(axis)] = value120;
+    });
+
+    pointer->setAxisRelativeDirection([this, axisIndex](CCWlPointer* r, wl_pointer_axis axis, wl_pointer_axis_relative_direction direction) {
+        pendingAxisDirections[axisIndex(axis)] = direction == WL_POINTER_AXIS_RELATIVE_DIRECTION_INVERTED ?
+            AQ_POINTER_AXIS_RELATIVE_INVERTED : AQ_POINTER_AXIS_RELATIVE_IDENTICAL;
+    });
+
+    pointer->setAxis([this, axisIndex, aqAxis](CCWlPointer* r, uint32_t timeMs, wl_pointer_axis axis, wl_fixed_t value) {
+        const auto index = axisIndex(axis);
+        events.axis.emit(SAxisEvent{
+            .timeMs    = timeMs,
+            .axis      = aqAxis(axis),
+            .source    = pendingAxisSource,
+            .direction = pendingAxisDirections[index],
+            .delta     = wl_fixed_to_double(value),
+            .discrete  = pendingAxisDiscrete[index],
+        });
+        pendingAxisDiscrete[index] = 0.0;
+    });
+
+    pointer->setAxisStop([this, axisIndex, aqAxis](CCWlPointer* r, uint32_t timeMs, wl_pointer_axis axis) {
+        const auto index = axisIndex(axis);
+        events.axis.emit(SAxisEvent{
+            .timeMs    = timeMs,
+            .axis      = aqAxis(axis),
+            .source    = pendingAxisSource,
+            .direction = pendingAxisDirections[index],
+            .delta     = 0.0,
+            .discrete  = 0.0,
+        });
+        pendingAxisDiscrete[index] = 0.0;
+    });
+
+    pointer->setFrame([this](CCWlPointer* r) {
+        events.frame.emit();
+        pendingAxisSource        = AQ_POINTER_AXIS_SOURCE_WHEEL;
+        pendingAxisDirections[0] = AQ_POINTER_AXIS_RELATIVE_IDENTICAL;
+        pendingAxisDirections[1] = AQ_POINTER_AXIS_RELATIVE_IDENTICAL;
+        pendingAxisDiscrete[0]   = 0.0;
+        pendingAxisDiscrete[1]   = 0.0;
+    });
 }
 
 Aquamarine::CWaylandPointer::~CWaylandPointer() {

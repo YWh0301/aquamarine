@@ -124,7 +124,13 @@ namespace Aquamarine {
         Hyprutils::Memory::CWeakPointer<CWaylandBackend> backend;
 
       private:
-        const std::string name = "wl_pointer";
+        const std::string                  name = "wl_pointer";
+        ePointerAxisSource                 pendingAxisSource = AQ_POINTER_AXIS_SOURCE_WHEEL;
+        ePointerAxisRelativeDirection      pendingAxisDirections[2] = {
+            AQ_POINTER_AXIS_RELATIVE_IDENTICAL,
+            AQ_POINTER_AXIS_RELATIVE_IDENTICAL,
+        };
+        double                             pendingAxisDiscrete[2] = {0.0, 0.0};
     };
 
     class CWaylandBackend : public IBackendImplementation {
