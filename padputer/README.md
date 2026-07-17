@@ -9,14 +9,16 @@ buffer without attaching it, then schedules a fresh frame only after the initial
 old Smithay compatibility exception was deleted. Commit
 `74991e0cd14e451290d1be3cf566f836f5c240e9` preserves nested pointer axis
 source, high-resolution/discrete values, direction and stop events across the
-Aquamarine input abstraction.
+Aquamarine input abstraction. Commit `bd5d79a` reports a bounded 256×256 nested
+cursor plane instead of invalid negative dimensions, allowing Hyprland hardware
+cursor setup.
 
 - `fetch-builddeps.sh` recreates ignored Arch Linux ARM build-dependency archives.
 - `build-aarch64.sh` creates an ignored, component-local `.build/aarch64/`
   sysroot and incremental CMake tree, verifies the public ABI, and writes the
   deterministic deployment library under the component-local ignored `out/`
   directory. Its required SHA-256 is
-  `f49e68074d7f381b87d5feb2811cfecd9b66ca88c5d5b92baded98b5c674176a`.
+  `756b8c7087cf75b485cff02e25c88268099e6542a9266a92a39a5118ddded390`.
 - `BUILDDEPS_SHA256SUMS` and `OUTPUT_SHA256SUMS` pin all ignored inputs/output.
 - `patches/initial-configure.patch` is an export for audit or upstream submission;
   the fix itself is committed in this fork.
