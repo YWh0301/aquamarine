@@ -5,6 +5,8 @@
 #include "Shared.hpp"
 #include "FormatUtils.hpp"
 #include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <xf86drm.h>
 #include <gbm.h>
 #include <fcntl.h>
@@ -758,6 +760,8 @@ void Aquamarine::CWaylandOutput::onFrameDone() {
 }
 
 bool Aquamarine::CWaylandOutput::setCursor(Hyprutils::Memory::CSharedPointer<IBuffer> buffer, const Hyprutils::Math::Vector2D& hotspot) {
+    if (std::getenv("AQ_TRACE"))
+        std::fprintf(stderr, "padputer nested cursor: set buffer=%d serial=%u hotspot=%.0f,%.0f\n", buffer ? 1 : 0, cursorState.serial, hotspot.x, hotspot.y);
     if (!cursorState.cursorSurface)
         cursorState.cursorSurface = makeShared<CCWlSurface>(backend->waylandState.compositor->sendCreateSurface());
 
@@ -846,6 +850,8 @@ void Aquamarine::CWaylandOutput::moveCursor(const Hyprutils::Math::Vector2D& coo
 
 void Aquamarine::CWaylandOutput::onEnter(SP<CCWlPointer> pointer, uint32_t serial) {
     cursorState.serial = serial;
+    if (std::getenv("AQ_TRACE"))
+        std::fprintf(stderr, "padputer nested cursor: enter serial=%u surface=%d buffer=%d\n", serial, cursorState.cursorSurface ? 1 : 0, cursorState.cursorWlBuffer ? 1 : 0);
 
     if (!cursorState.cursorSurface)
         return;
