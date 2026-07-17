@@ -854,7 +854,10 @@ void Aquamarine::CWaylandOutput::onEnter(SP<CCWlPointer> pointer, uint32_t seria
 }
 
 Hyprutils::Math::Vector2D Aquamarine::CWaylandOutput::cursorPlaneSize() {
-    return {-1, -1}; // no limit
+    // Hyprland treats this as a concrete allocation limit. Returning negative
+    // dimensions advertises a malformed hardware plane and crashes cursor
+    // swapchain setup before the nested output's first frame.
+    return {256, 256};
 }
 
 void Aquamarine::CWaylandOutput::scheduleFrame(const scheduleFrameReason reason) {
