@@ -279,8 +279,12 @@ Aquamarine::CWaylandPointer::CWaylandPointer(SP<CCWlPointer> pointer_, Hyprutils
 
     pointer->setEnter([this](CCWlPointer* r, uint32_t serial, wl_proxy* surface, wl_fixed_t x, wl_fixed_t y) {
         backend->lastEnterSerial = serial;
+        if (std::getenv("AQ_TRACE"))
+            std::fprintf(stderr, "padputer nested cursor: raw enter serial=%u surface=%p outputs=%zu\n", serial, (void*)surface, backend->outputs.size());
 
         for (auto const& o : backend->outputs) {
+            if (std::getenv("AQ_TRACE"))
+                std::fprintf(stderr, "padputer nested cursor: compare output=%s surface=%p\n", o->name.c_str(), (void*)o->waylandState.surface->resource());
             if (o->waylandState.surface->resource() != surface)
                 continue;
 
