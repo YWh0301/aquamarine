@@ -854,10 +854,9 @@ void Aquamarine::CWaylandOutput::onEnter(SP<CCWlPointer> pointer, uint32_t seria
 }
 
 Hyprutils::Math::Vector2D Aquamarine::CWaylandOutput::cursorPlaneSize() {
-    // Hyprland treats this as a concrete allocation limit. Returning negative
-    // dimensions advertises a malformed hardware plane and crashes cursor
-    // swapchain setup before the nested output's first frame.
-    return {256, 256};
+    // Nested Wayland has no KMS cursor-plane limit. Hyprland explicitly treats
+    // this sentinel as "use the current cursor image size".
+    return {-1, -1};
 }
 
 void Aquamarine::CWaylandOutput::scheduleFrame(const scheduleFrameReason reason) {
