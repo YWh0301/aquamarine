@@ -11,14 +11,15 @@ old Smithay compatibility exception was deleted. Commit
 source, high-resolution/discrete values, direction and stop events across the
 Aquamarine input abstraction. Commit `33249e6` preserves the nested backend's
 unbounded cursor-plane sentinel; Hyprland explicitly maps it to the current
-cursor image size.
+cursor image size. Commit `04a9c44` adds bounded `AQ_TRACE` diagnostics for
+nested cursor buffer/enter ordering without changing protocol behavior.
 
 - `fetch-builddeps.sh` recreates ignored Arch Linux ARM build-dependency archives.
 - `build-aarch64.sh` creates an ignored, component-local `.build/aarch64/`
   sysroot and incremental CMake tree, verifies the public ABI, and writes the
   deterministic deployment library under the component-local ignored `out/`
   directory. Its required SHA-256 is
-  `f49e68074d7f381b87d5feb2811cfecd9b66ca88c5d5b92baded98b5c674176a`.
+  `04e4be7eb979fd66bbfe550d954f9e4b87209117f75023292f756e496317920a`.
 - `BUILDDEPS_SHA256SUMS` and `OUTPUT_SHA256SUMS` pin all ignored inputs/output.
 - `patches/initial-configure.patch` is an export for audit or upstream submission;
   the fix itself is committed in this fork.
